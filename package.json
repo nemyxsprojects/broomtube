@@ -1,0 +1,56 @@
+{
+  "name": "vacuum-desktop",
+  "productName": "Vacuum Desktop",
+  "version": "1.0.0",
+  "description": "Vacuum Desktop : YouTube et YouTube Music sans pubs, avec SponsorBlock, Return YouTube Dislike et téléchargeur intégré.",
+  "main": "src/main/main.js",
+  "author": "Vacuum",
+  "license": "GPL-3.0-only",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "fetch-bin": "node scripts/fetch-binaries.js",
+    "pack": "electron-builder --win dir --x64",
+    "setup": "node scripts/build-setup.js",
+    "dist": "npm run fetch-bin && npm run pack && npm run setup"
+  },
+  "build": {
+    "appId": "com.vacuum.desktop",
+    "productName": "Vacuum Desktop",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "bin",
+        "to": "bin",
+        "filter": [
+          "*.exe",
+          "*.dll"
+        ]
+      }
+    ],
+    "asar": true,
+    "win": {
+      "target": "dir",
+      "icon": "build/icon.ico"
+    },
+    "electronLanguages": [
+      "fr",
+      "en-US",
+      "en-GB"
+    ]
+  },
+  "dependencies": {
+    "@ghostery/adblocker-electron": "^2.20.3",
+    "cross-fetch": "^4.1.0"
+  },
+  "devDependencies": {
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0"
+  }
+}

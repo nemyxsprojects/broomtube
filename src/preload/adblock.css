@@ -1,0 +1,22 @@
+/* Masquage cosmétique des emplacements publicitaires YouTube / YouTube Music */
+#masthead-ad, #player-ads, #panels > ytd-ads-engagement-panel-content-renderer,
+ytd-ad-slot-renderer, ytd-in-feed-ad-layout-renderer, ytd-banner-promo-renderer,
+ytd-promoted-sparkles-web-renderer, ytd-promoted-video-renderer, ytd-compact-promoted-video-renderer,
+ytd-display-ad-renderer, ytd-search-pyv-renderer, ytd-statement-banner-renderer,
+ytd-brand-video-singleton-renderer, ytd-brand-video-shelf-renderer, ytd-player-legacy-desktop-watch-ads-renderer,
+ytd-rich-item-renderer:has(> #content > ytd-ad-slot-renderer),
+ytd-rich-section-renderer:has(ytd-statement-banner-renderer),
+ytd-rich-section-renderer:has(ytd-brand-video-shelf-renderer),
+ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-ads"],
+ytd-merch-shelf-renderer, ytd-mealbar-promo-renderer, yt-mealbar-promo-renderer,
+.ytp-ad-module, .ytp-ad-overlay-container, .ytp-ad-text-overlay, .ytp-ad-image-overlay,
+.ytp-featured-product, .ytp-suggested-action, .ytp-paid-content-overlay,
+ytd-enforcement-message-view-model, tp-yt-iron-overlay-backdrop.opened:has(+ tp-yt-paper-dialog ytd-enforcement-message-view-model),
+ytmusic-mealbar-promo-renderer, ytmusic-statement-banner-renderer,
+ytm-promoted-sparkles-web-renderer, ad-slot-renderer
+{ display: none !important; }
+
+/* Pendant une pub (sautée automatiquement en une fraction de seconde) : rien n'est affiché */
+.html5-video-player.ad-showing video, .html5-video-player.ad-interrupting video { opacity: 0 !important; }
+.html5-video-player.ad-showing .ytp-ad-player-overlay, .html5-video-player.ad-showing .ytp-ad-player-overlay-layout,
+.html5-video-player.ad-showing .video-ads { visibility: hidden !important; }

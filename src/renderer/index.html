@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <title>Vacuum Desktop</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-section="youtube">
+  <nav id="sidebar">
+    <div class="logo"><img src="assets/icon.png" alt="" draggable="false"></div>
+
+    <button class="side-btn" data-target="youtube" title="YouTube">
+      <svg viewBox="0 0 24 24"><path fill-rule="evenodd" d="M21.58 7.19a2.51 2.51 0 0 0-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42A2.51 2.51 0 0 0 2.42 7.19C2 8.75 2 12 2 12s0 3.25.42 4.81a2.51 2.51 0 0 0 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42a2.51 2.51 0 0 0 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81ZM10 15V9l5.2 3L10 15Z"/></svg>
+    </button>
+    <button class="side-btn" data-target="music" title="YouTube Music">
+      <svg viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2a10 10 0 1 0 0 20 10 10 0 1 0 0-20Zm0 3.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 1 0 0-13Zm0 1a5.5 5.5 0 1 1 0 11 5.5 5.5 0 1 1 0-11ZM10 9.3v5.4l4.6-2.7L10 9.3Z"/></svg>
+    </button>
+
+    <div class="spacer"></div>
+
+    <button class="side-btn" data-target="settings" data-i18n-title="nav.settings" title="Settings">
+      <svg viewBox="0 0 24 24"><path fill-rule="evenodd" d="M10.3 2h3.4l.5 2.6c.6.2 1.1.5 1.6.9l2.5-.9 1.7 2.9-2 1.7a7 7 0 0 1 0 1.8l2 1.7-1.7 2.9-2.5-.9c-.5.4-1 .7-1.6.9L13.7 22h-3.4l-.5-2.6a7 7 0 0 1-1.6-.9l-2.5.9-1.7-2.9 2-1.7a7 7 0 0 1 0-1.8l-2-1.7 1.7-2.9 2.5.9c.5-.4 1-.7 1.6-.9L10.3 2ZM12 8.6a3.4 3.4 0 1 0 0 6.8 3.4 3.4 0 0 0 0-6.8Z" transform="translate(0 0)"/></svg>
+    </button>
+  </nav>
+
+  <main id="main">
+    <header id="tabstrip">
+      <div id="tabs"></div>
+      <button id="new-tab" data-i18n-title="tab.new" data-key-hint="Ctrl+T" title="New tab  Ctrl+T">
+        <svg viewBox="0 0 24 24"><path d="M11.25 5h1.5v6.25H19v1.5h-6.25V19h-1.5v-6.25H5v-1.5h6.25z"/></svg>
+      </button>
+      <div class="drag-fill"></div>
+      <div id="settings-title" data-i18n="s.title">Settings</div>
+    </header>
+
+    <div id="toolbar">
+      <div class="nav-group">
+        <button class="tool" id="btn-back" data-i18n-title="tb.back" data-key-hint="Alt+←" title="Back  Alt+←"><svg viewBox="0 0 24 24"><path d="M19 11.25H7.4l5.1-5.1-1.06-1.06L4.53 12l6.9 6.9 1.07-1.05-5.1-5.1H19z"/></svg></button>
+        <button class="tool" id="btn-forward" data-i18n-title="tb.forward" data-key-hint="Alt+→" title="Forward  Alt+→"><svg viewBox="0 0 24 24"><path d="m12.56 5.1-1.06 1.05 5.1 5.1H5v1.5h11.6l-5.1 5.1 1.06 1.06 6.9-6.91z"/></svg></button>
+        <button class="tool" id="btn-reload" data-i18n-title="tb.reload" data-key-hint="Ctrl+R" title="Reload  Ctrl+R"><svg viewBox="0 0 24 24"><path d="M12 4.75a7.25 7.25 0 1 0 7.17 8.35l-1.48-.22A5.75 5.75 0 1 1 16.1 7.9l-2.35 2.35H19.5V4.5l-2.34 2.34A7.22 7.22 0 0 0 12 4.75Z"/></svg></button>
+        <button class="tool" id="btn-home" data-i18n-title="tb.home" title="Home"><svg viewBox="0 0 24 24"><path d="M12 3.6 3.75 10v10.25h6v-6h4.5v6h6V10L12 3.6Zm6.75 15.15h-3v-6h-7.5v6h-3V10.73L12 5.5l6.75 5.23v8.02Z"/></svg></button>
+      </div>
+
+      <form id="address-form">
+        <svg class="search-ico" viewBox="0 0 24 24"><path d="M10.5 4a6.5 6.5 0 0 1 5.13 10.49l4.44 4.45-1.06 1.06-4.45-4.44A6.5 6.5 0 1 1 10.5 4Zm0 1.5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"/></svg>
+        <input id="address" type="text" spellcheck="false" autocomplete="off" placeholder="Search YouTube or paste a link">
+        <kbd class="addr-hint">Ctrl L</kbd>
+      </form>
+
+      <button class="tool labeled" id="btn-download" data-i18n-title="tb.download.tip" data-key-hint="Ctrl+D" title="Download this video  Ctrl+D">
+        <svg viewBox="0 0 24 24"><path d="M11.25 4h1.5v9.19l3.22-3.22 1.06 1.06L12 16.06l-5.03-5.03 1.06-1.06 3.22 3.22V4ZM5 18.5h14V20H5z"/></svg>
+        <span data-i18n="tb.download">Download</span>
+      </button>
+      <button class="tool" id="btn-downloads" data-i18n-title="tb.downloads" data-key-hint="Ctrl+J" title="Downloads  Ctrl+J">
+        <svg viewBox="0 0 24 24"><path d="M4 5h16v1.5H4zm0 6.25h10v1.5H4zM4 17.5h16V19H4zm13-7.25 3.5 2-3.5 2v-4Z"/></svg>
+        <span id="dl-badge" hidden>0</span>
+      </button>
+    </div>
+
+    <div id="body">
+      <div id="content"><div class="placeholder"><div class="spinner"></div></div></div>
+
+      <aside id="downloads" hidden>
+        <div class="panel-head">
+          <h2 data-i18n="dl.title">Downloads</h2>
+          <button class="icon-btn" id="dl-close" data-i18n-title="dl.close" data-key-hint="Esc" title="Close  Esc"><svg viewBox="0 0 24 24"><path d="m6.53 5.47 5.47 5.47 5.47-5.47 1.06 1.06L13.06 12l5.47 5.47-1.06 1.06L12 13.06l-5.47 5.47-1.06-1.06L10.94 12 5.47 6.53z"/></svg></button>
+        </div>
+
+        <form id="dl-form">
+          <div class="dl-source">
+            <img id="dl-thumb" alt="" hidden>
+            <div class="dl-source-text">
+              <div id="dl-title" class="dl-title"></div>
+              <input id="dl-url" type="text" spellcheck="false" data-i18n-placeholder="dl.url" placeholder="Paste a YouTube link…">
+            </div>
+          </div>
+          <div class="seg" id="dl-kind">
+            <button type="button" data-kind="video" class="on" data-i18n="dl.video">Video</button>
+            <button type="button" data-kind="audio" data-i18n="dl.audio">Audio</button>
+          </div>
+          <label class="field" id="dl-video-opts">
+            <span data-i18n="dl.quality">Quality</span>
+            <select id="dl-quality">
+              <option value="best" data-i18n="dl.best">Best available</option>
+              <option value="2160">2160p</option>
+              <option value="1440">1440p</option>
+              <option value="1080">1080p</option>
+              <option value="720">720p</option>
+              <option value="480">480p</option>
+              <option value="360">360p</option>
+            </select>
+          </label>
+          <label class="field" id="dl-audio-opts" hidden>
+            <span data-i18n="dl.format">Format</span>
+            <select id="dl-audio-format">
+              <option value="mp3">MP3</option>
+              <option value="m4a">M4A</option>
+              <option value="opus">Opus</option>
+            </select>
+          </label>
+          <label class="check" id="dl-playlist-row" hidden><input type="checkbox" id="dl-playlist"><span data-i18n="dl.playlist">Whole playlist</span></label>
+          <button type="submit" class="primary" id="dl-go">Download</button>
+        </form>
+
+        <div class="panel-sub">
+          <span data-i18n="dl.recent">Recent</span>
+          <span class="links">
+            <button type="button" class="link-btn" id="dl-open-folder" data-i18n="dl.folder">Folder</button>
+            <button type="button" class="link-btn" id="dl-clear" data-i18n="dl.clear">Clear list</button>
+          </span>
+        </div>
+        <div id="dl-list"></div>
+      </aside>
+
+      <section id="settings" hidden>
+        <nav class="settings-nav">
+          <a href="#set-general" data-i18n="s.nav.general">General</a><a href="#set-ads" data-i18n="s.nav.ads">Ads</a><a href="#set-sponsorblock" data-i18n="s.nav.sb">SponsorBlock</a><a href="#set-ryd" data-i18n="s.nav.ryd">Dislikes</a><a href="#set-downloads" data-i18n="s.nav.dl">Downloads</a><a href="#set-start" data-i18n="s.nav.start">Startup</a><a href="#set-data" data-i18n="s.nav.data">Data</a><a href="#set-keys" data-i18n="s.nav.keys">Shortcuts</a>
+        </nav>
+        <div class="settings-inner">
+
+          <section class="group" id="set-general">
+            <h2 data-i18n="s.general">General</h2>
+            <div class="row"><span class="row-text"><b data-i18n="s.language">Language</b><small data-i18n="s.language.desc">Language of Vacuum Desktop. YouTube keeps its own language setting.</small></span>
+              <select data-key="language" id="language-select"></select></div>
+          </section>
+
+          <section class="group" id="set-ads">
+            <h2 data-i18n="s.ads">Ads</h2>
+            <label class="row switch-row"><span class="row-text"><b data-i18n="s.ads.block">Block ads</b><small data-i18n="s.ads.block.desc">uBlock Origin and EasyList filters, plus anti-detection countermeasures.</small></span><input type="checkbox" class="switch" data-key="adblockEnabled"></label>
+            <div class="row"><span class="row-text"><b data-i18n="s.ads.lists">Filter lists</b><small id="adblock-info">—</small></span><button class="btn" id="adblock-update" data-i18n="s.update">Update</button></div>
+          </section>
+
+          <section class="group" id="set-sponsorblock">
+            <h2>SponsorBlock</h2>
+            <label class="row switch-row"><span class="row-text"><b data-i18n="s.sb.enable">Enable SponsorBlock</b><small data-i18n="s.sb.enable.desc">Segments reported by the community (sponsor.ajay.app). Requests do not reveal which video you watch.</small></span><input type="checkbox" class="switch" data-key="sbEnabled"></label>
+            <div class="row cats" id="sb-cats"></div>
+            <label class="row switch-row"><span class="row-text"><b data-i18n="s.sb.markers">Show segments on the progress bar</b></span><input type="checkbox" class="switch" data-key="sbShowMarkers"></label>
+            <label class="row switch-row"><span class="row-text"><b data-i18n="s.sb.notify">Notify when a segment is skipped</b><small data-i18n="s.sb.notify.desc">With an undo button.</small></span><input type="checkbox" class="switch" data-key="sbNotify"></label>
+            <div class="row"><span class="row-text"><b data-i18n="s.sb.min">Minimum duration</b><small data-i18n="s.sb.min.desc">Ignore shorter segments.</small></span>
+              <select data-key="sbMinDuration" data-type="number"><option value="0" data-i18n="s.sb.none">None</option><option value="1">1 s</option><option value="3">3 s</option><option value="5">5 s</option><option value="10">10 s</option></select></div>
+            <label class="row switch-row"><span class="row-text"><b data-i18n="s.sb.stats">Contribute to statistics</b><small data-i18n="s.sb.stats.desc">Anonymously tells SponsorBlock that a segment was skipped.</small></span><input type="checkbox" class="switch" data-key="sbCountViews"></label>
+            <label class="row switch-row"><span class="row-text"><b data-i18n="s.sb.files">Remove sponsors from downloaded files</b><small data-i18n="s.sb.files.desc">With yt-dlp.</small></span><input type="checkbox" class="switch" data-key="sponsorBlockRemove"></label>
+          </section>
+
+          <section class="group" id="set-ryd">
+            <h2>Return YouTube Dislike</h2>
+            <label class="row switch-row"><span class="row-text"><b data-i18n="s.ryd.enable">Show dislikes</b><small data-i18n="s.ryd.enable.desc">Estimates from returnyoutubedislike.com, on videos and Shorts.</small></span><input type="checkbox" class="switch" data-key="rydEnabled"></label>
+            <label class="row switch-row"><span class="row-text"><b data-i18n="s.ryd.bar">Ratio bar</b><small data-i18n="s.ryd.bar.desc">Under the like / dislike buttons.</small></span><input type="checkbox" class="switch" data-key="rydShowBar"></label>
+            <label class="row switch-row"><span class="row-text"><b data-i18n="s.ryd.compact">Short numbers</b><small data-i18n="s.ryd.compact.desc">12K instead of 12,345.</small></span><input type="checkbox" class="switch" data-key="rydCompact"></label>
+          </section>
+
+          <section class="group" id="set-downloads">
+            <h2 data-i18n="s.nav.dl">Downloads</h2>
+            <div class="row"><span class="row-text"><b data-i18n="s.dl.method">Method</b><small id="dl-method-info">yt-dlp is built into Vacuum Desktop.</small></span>
+              <select data-key="downloadMethod"><option value="ytdlp" data-i18n="s.dl.ytdlp">yt-dlp (built-in)</option><option value="vdh">Video DownloadHelper</option></select></div>
+            <div class="row" id="vdh-row" hidden><span class="row-text"><b>Video DownloadHelper</b><small id="vdh-info">—</small></span><button class="btn" id="vdh-install" hidden data-i18n="s.vdh.install">Install</button></div>
+            <div class="row ytdlp-only"><span class="row-text"><b data-i18n="s.dl.quality">Video quality</b></span>
+              <select data-key="defaultVideoQuality">
+                <option value="best" data-i18n="dl.best">Best available</option><option value="2160">2160p</option><option value="1440">1440p</option>
+                <option value="1080">1080p</option><option value="720">720p</option><option value="480">480p</option><option value="360">360p</option>
+              </select></div>
+            <div class="row ytdlp-only"><span class="row-text"><b data-i18n="s.dl.audio">Audio format</b></span>
+              <select data-key="defaultAudioFormat"><option value="mp3">MP3</option><option value="m4a">M4A</option><option value="opus">Opus</option></select></div>
+            <label class="row switch-row ytdlp-only"><span class="row-text"><b data-i18n="s.dl.musicAudio">Audio by default in Music</b></span><input type="checkbox" class="switch" data-key="musicDefaultsToAudio"></label>
+            <label class="row switch-row ytdlp-only"><span class="row-text"><b data-i18n="s.dl.cookies">Use my YouTube session</b><small data-i18n="s.dl.cookies.desc">Fewer blocks, and access to age-restricted or members-only videos.</small></span><input type="checkbox" class="switch" data-key="useCookiesForDownloads"></label>
+            <label class="row switch-row ytdlp-only"><span class="row-text"><b data-i18n="s.dl.meta">Metadata and cover art</b></span><input type="checkbox" class="switch" data-key="embedMetadata"></label>
+            <label class="row switch-row ytdlp-only"><span class="row-text"><b data-i18n="s.dl.reveal">Show the file when done</b></span><input type="checkbox" class="switch" data-key="openFolderWhenDone"></label>
+            <div class="row ytdlp-only"><span class="row-text"><b>yt-dlp</b><small id="ytdlp-info" class="mono">—</small></span><button class="btn" id="ytdlp-update" data-i18n="s.update">Update</button></div>
+            <div class="row"><span class="row-text"><b data-i18n="s.dl.folder">Folder</b><small id="dl-dir" class="mono">—</small></span><span class="btns"><button class="btn" id="dl-dir-open" data-i18n="s.open">Open</button><button class="btn" id="dl-dir-choose" data-i18n="s.change">Change</button></span></div>
+          </section>
+
+          <section class="group" id="set-start">
+            <h2 data-i18n="s.start">Startup</h2>
+            <div class="row"><span class="row-text"><b data-i18n="s.start.open">Open on</b></span>
+              <select data-key="startSection"><option value="youtube">YouTube</option><option value="music">Music</option><option value="last" data-i18n="s.start.last">Last used section</option></select></div>
+            <label class="row switch-row"><span class="row-text"><b data-i18n="s.start.restore">Restore tabs</b></span><input type="checkbox" class="switch" data-key="restoreTabs"></label>
+          </section>
+
+          <section class="group" id="set-data">
+            <h2 data-i18n="s.data">Data</h2>
+            <div class="row"><span class="row-text"><b data-i18n="s.data.cache">Clear cache</b><small data-i18n="s.data.cache.desc">You stay signed in.</small></span><button class="btn" id="clear-cache" data-i18n="s.data.cache.btn">Clear</button></div>
+            <div class="row"><span class="row-text"><b data-i18n="s.data.all">Erase everything</b><small data-i18n="s.data.all.desc">Signs you out and deletes history.</small></span><button class="btn danger" id="clear-all" data-i18n="s.data.all.btn">Erase</button></div>
+          </section>
+
+          <section class="group" id="set-keys">
+            <h2 data-i18n="s.keys">Shortcuts</h2>
+            <dl class="shortcuts">
+              <dt><kbd>Ctrl</kbd><kbd>T</kbd></dt><dd data-i18n="s.keys.newTab">New tab</dd>
+              <dt><kbd>Ctrl</kbd><kbd>W</kbd></dt><dd data-i18n="s.keys.closeTab">Close tab</dd>
+              <dt><kbd>Ctrl</kbd><kbd>Tab</kbd></dt><dd data-i18n="s.keys.nextTab">Next tab</dd>
+              <dt><kbd>Ctrl</kbd><kbd>1</kbd>–<kbd>9</kbd></dt><dd data-i18n="s.keys.goTab">Go to a tab</dd>
+              <dt><kbd>Ctrl</kbd><kbd>L</kbd></dt><dd data-i18n="s.keys.search">Search bar</dd>
+              <dt><kbd>Ctrl</kbd><kbd>D</kbd></dt><dd data-i18n="s.keys.download">Download the video</dd>
+              <dt><kbd>Ctrl</kbd><kbd>J</kbd></dt><dd data-i18n="s.keys.downloads">Downloads</dd>
+              <dt><kbd>Alt</kbd><kbd>←</kbd></dt><dd data-i18n="s.keys.back">Back</dd>
+              <dt><kbd>F11</kbd></dt><dd data-i18n="s.keys.fullscreen">Full screen</dd>
+            </dl>
+          </section>
+
+          <p class="about" id="about"></p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="toast" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>

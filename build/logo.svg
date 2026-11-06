@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="g" x1="60" y1="20" x2="200" y2="240" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff8a3d"/>
+      <stop offset="0.55" stop-color="#f2335f"/>
+      <stop offset="1" stop-color="#8b4dff"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="128" cy="104" r="70" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff6a3d" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#ff6a3d" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Ampoule de verre du tube à vide -->
+  <path d="M76 168 V76 a52 52 0 0 1 104 0 V168 Z" fill="url(#glow)"/>
+  <path d="M76 168 V76 a52 52 0 0 1 104 0 V168" fill="none" stroke="url(#g)" stroke-width="18" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Filament : triangle de lecture -->
+  <path d="M112 78 L156 106 L112 134 Z" fill="url(#g)" stroke="url(#g)" stroke-width="18" stroke-linejoin="round"/>
+  <!-- Culot et broches -->
+  <rect x="62" y="164" width="132" height="34" rx="10" fill="url(#g)"/>
+  <rect x="86" y="200" width="14" height="26" rx="7" fill="url(#g)"/>
+  <rect x="121" y="200" width="14" height="26" rx="7" fill="url(#g)"/>
+  <rect x="156" y="200" width="14" height="26" rx="7" fill="url(#g)"/>
+</svg>

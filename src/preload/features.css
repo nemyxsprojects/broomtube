@@ -1,0 +1,40 @@
+/* Vacuum Desktop : SponsorBlock et Return YouTube Dislike, intégrés au style de YouTube */
+
+/* --- SponsorBlock : segments sur la barre de progression */
+.vacuum-sb-markers {
+  position: absolute; inset: 0; pointer-events: none; z-index: 33;
+}
+.vacuum-sb-markers > i {
+  position: absolute; top: 0; bottom: 0; min-width: 2px; opacity: .9;
+}
+.ytp-progress-bar-container:hover .vacuum-sb-markers > i { opacity: 1; }
+
+/* --- SponsorBlock : avis "segment passé" / bouton "Passer" (en bas à droite du lecteur) */
+.vacuum-sb-notice {
+  position: absolute; right: 12px; bottom: 64px; z-index: 70;
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 6px 6px 12px; border-radius: 8px;
+  background: rgba(15, 15, 15, .88); color: #fff;
+  font: 500 13px/18px "YouTube Sans", Roboto, Arial, sans-serif;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .35);
+  opacity: 0; transform: translateY(6px); transition: opacity .15s, transform .15s;
+}
+.vacuum-sb-notice.show { opacity: 1; transform: none; }
+.vacuum-sb-notice .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.vacuum-sb-notice button {
+  height: 28px; padding: 0 12px; border: 0; border-radius: 14px; cursor: pointer;
+  background: rgba(255, 255, 255, .14); color: #fff; font: 500 12.5px "YouTube Sans", Roboto, Arial, sans-serif;
+}
+.vacuum-sb-notice button:hover { background: rgba(255, 255, 255, .24); }
+.ytp-autohide .vacuum-sb-notice { bottom: 16px; }
+/* YouTube Music : avis fixé au-dessus de la barre de lecture */
+.vacuum-sb-notice.music { position: fixed; bottom: 84px; right: 16px; }
+
+/* --- Return YouTube Dislike */
+.vacuum-ryd-text { margin-left: 6px; }
+.vacuum-ryd-bar {
+  position: absolute; left: 10px; right: 10px; bottom: -6px; height: 3px; border-radius: 2px; overflow: hidden;
+  background: var(--yt-spec-icon-disabled, rgba(255, 255, 255, .25)); pointer-events: none;
+}
+.vacuum-ryd-bar > i { display: block; height: 100%; background: var(--yt-spec-text-primary, #f1f1f1); }
+segmented-like-dislike-button-view-model { position: relative; }
