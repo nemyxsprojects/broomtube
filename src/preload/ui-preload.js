@@ -35,7 +35,6 @@ contextBridge.exposeInMainWorld('broom', {
   vdhStatus: () => ipcRenderer.invoke('vdh:status'),
   accountStatus: () => ipcRenderer.invoke('account:status'),
   signIn: () => ipcRenderer.send('account:signin'),
-  importFirefox: () => ipcRenderer.invoke('account:import'),
   signOut: () => ipcRenderer.invoke('account:signout'),
   onAccountChanged: on('account:changed'),
   vdhOpen: (url) => ipcRenderer.invoke('vdh:open', url),

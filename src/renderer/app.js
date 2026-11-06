@@ -387,19 +387,9 @@ async function refreshAccount() {
   $('#account-info').textContent = tr(a.signedIn ? 's.account.in' : 's.account.out');
   $('#account-signin').hidden = a.signedIn;
   $('#account-signout').hidden = !a.signedIn;
-  $('#account-import').disabled = !a.firefox;
-  $('#account-import').title = a.firefox ? '' : tr('s.account.noFirefox');
 }
 $('#account-signin').addEventListener('click', () => broom.signIn());
 $('#account-signout').addEventListener('click', async () => { await broom.signOut(); toast(tr('toast.signedOut')); refreshAccount(); });
-$('#account-import').addEventListener('click', async (e) => {
-  const b = e.currentTarget; b.disabled = true;
-  const r = await broom.importFirefox();
-  b.disabled = false;
-  if (r.ok) toast(tr('toast.imported'));
-  else toast(tr(r.error === 'not-signed-in' ? 'toast.ffNotSignedIn' : r.error === 'no-firefox' ? 's.account.noFirefox' : 'toast.importFailed'), 5000);
-  refreshAccount();
-});
 broom.onAccountChanged(() => { toast(tr('toast.signedIn')); if (state && state.section === 'settings') refreshAccount(); });
 
 async function refreshYtdlp() { $('#ytdlp-info').textContent = tr('s.dl.version', { version: await broom.ytdlpVersion() }); }

@@ -31,7 +31,7 @@ BroomTube is a Windows app dedicated to YouTube and YouTube Music. It blocks ads
 - ⬇️ **Downloader**: videos up to 4K, MP3/M4A/Opus audio and whole playlists with yt-dlp, or hand off to Video DownloadHelper in Firefox
 - 🎵 **YouTube Music**: its own section and tabs, music keeps playing while you browse YouTube
 - 🗂️ **Tabs**: shortcuts, drag and drop, session restore
-- 🔐 **Google sign-in that works**: a dedicated sign-in window that Google accepts, or import your session from Firefox in one click
+- 🔐 **Google sign-in**: a dedicated sign-in window designed to be accepted by Google
 - 🌍 **6 languages**: English, French, Spanish, German, Italian and Brazilian Portuguese
 
 ## 🔽 Download

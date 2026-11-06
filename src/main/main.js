@@ -80,12 +80,21 @@ function isGoogleSignin(u) {
     return x.hostname === 'accounts.google.com' && /^\/(ServiceLogin|InteractiveLogin|AccountChooser|signin|v3\/signin)/i.test(x.pathname);
   } catch { return false; }
 }
+function signedIn() {
+  for (const t of tabsById.values()) t.view.webContents.reload();
+  send('account:changed', null);
+}
+// Sign-in in the dedicated window. If Google refuses it, offer to try again.
 function startSignin(url) {
   signin.openSigninWindow({
     parent: win, partition: PARTITION, url,
-    onDone: () => {
-      for (const t of tabsById.values()) t.view.webContents.reload();
-      send('account:changed', null);
+    onDone: signedIn,
+    onRejected: async () => {
+      const r = await dialog.showMessageBox(win, {
+        type: 'warning', buttons: [t('dialog.retry'), t('dialog.cancel')], defaultId: 0, cancelId: 1,
+        title: t('dialog.rejected.title'), message: t('dialog.rejected.message'), detail: t('dialog.rejected.detail'),
+      });
+      if (r.response === 0) startSignin(url);
     },
   });
 }
@@ -406,15 +415,8 @@ function registerIpc() {
   ipcMain.on('sb:viewed', (_e, uuid) => { if (settings.get('sbCountViews')) features.sponsorViewed(uuid); });
   ipcMain.handle('ryd:votes', (_e, videoId) => (settings.get('rydEnabled') ? features.dislikes(videoId) : null));
   ipcMain.handle('vdh:status', () => features.vdhStatus());
-  ipcMain.handle('account:status', async () => ({ signedIn: await signin.isSignedIn(ses), firefox: signin.firefoxAvailable() }));
+  ipcMain.handle('account:status', async () => ({ signedIn: await signin.isSignedIn(ses) }));
   ipcMain.on('account:signin', () => startSignin());
-  ipcMain.handle('account:import', async () => {
-    try {
-      const r = await signin.importFromFirefox(ses);
-      if (r.ok) for (const t of tabsById.values()) t.view.webContents.reload();
-      return r;
-    } catch (e) { return { ok: false, error: e.message }; }
-  });
   ipcMain.handle('account:signout', async () => {
     await signin.signOut(ses);
     for (const t of tabsById.values()) t.view.webContents.reload();

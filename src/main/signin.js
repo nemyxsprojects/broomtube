@@ -1,11 +1,9 @@
-// Google sign-in.
+// Google sign-in in a dedicated window.
 // Google sometimes refuses sign-in from embedded browsers ("This browser or app may not be secure").
-// Two ways around it:
-//  1. a dedicated sign-in window with a consistent Firefox fingerprint (no ad shield, no debugger);
-//  2. importing the Google/YouTube session from the user's own Firefox profile.
-const { BrowserWindow, app } = require('electron');
-const fs = require('fs');
-const os = require('os');
+// The window presents a consistent Firefox fingerprint (see signin-preload.js), has no ad shield and no
+// debugger attached, which is what Google accepts most of the time. When Google still refuses, the
+// window closes and the app tells the user, who can try again.
+const { BrowserWindow } = require('electron');
 const path = require('path');
 
 const FIREFOX_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0';
@@ -14,8 +12,7 @@ const SIGNIN_URL = 'https://accounts.google.com/ServiceLogin?service=youtube&con
 
 let signinWin = null;
 
-/** Opens the dedicated sign-in window. Resolves true once signed in to YouTube. */
-function openSigninWindow({ parent, partition, onDone, url }) {
+function openSigninWindow({ parent, partition, onDone, onRejected, url }) {
   if (signinWin && !signinWin.isDestroyed()) { signinWin.focus(); return; }
   signinWin = new BrowserWindow({
     parent, width: 520, height: 720, minWidth: 420, minHeight: 560,
@@ -28,85 +25,24 @@ function openSigninWindow({ parent, partition, onDone, url }) {
   });
   const wc = signinWin.webContents;
   wc.setUserAgent(FIREFOX_UA);
-  wc.setWindowOpenHandler(({ url }) => { wc.loadURL(url); return { action: 'deny' }; });
-  const finished = (url) => {
-    let h = '';
-    try { h = new URL(url).hostname; } catch {}
-    // Back on YouTube (and not on the sign-in bounce page): done
-    if (/(^|\.)youtube\.com$/.test(h) && !/\/signin/.test(url)) {
-      const w = signinWin;
-      signinWin = null;
-      if (w && !w.isDestroyed()) w.close();
-      onDone(true);
-    }
+  wc.setWindowOpenHandler(({ url: u }) => { wc.loadURL(u); return { action: 'deny' }; });
+  const close = () => {
+    const w = signinWin;
+    signinWin = null;
+    if (w && !w.isDestroyed()) w.close();
   };
-  wc.on('did-navigate', (_e, url) => finished(url));
-  wc.on('did-redirect-navigation', (e) => finished(e.url));
+  const check = (u) => {
+    // Google refused this window
+    if (/accounts\.google\.com\/.*signin\/rejected/.test(u)) { close(); if (onRejected) onRejected(); return; }
+    let host = '';
+    try { host = new URL(u).hostname; } catch {}
+    // Back on YouTube (past the sign-in bounce page): signed in
+    if (/(^|\.)youtube\.com$/.test(host) && !/\/signin/.test(u)) { close(); onDone(); }
+  };
+  wc.on('did-navigate', (_e, u) => check(u));
+  wc.on('did-redirect-navigation', (e) => check(e.url));
   signinWin.on('closed', () => { signinWin = null; });
   wc.loadURL(url || SIGNIN_URL);
-}
-
-// ---------------------------------------------------------------- Firefox import
-function firefoxProfiles() {
-  const base = path.join(process.env.APPDATA || '', 'Mozilla', 'Firefox', 'Profiles');
-  try {
-    return fs.readdirSync(base)
-      .map((d) => path.join(base, d))
-      .filter((d) => fs.existsSync(path.join(d, 'cookies.sqlite')))
-      .sort((a, b) => fs.statSync(path.join(b, 'cookies.sqlite')).mtimeMs - fs.statSync(path.join(a, 'cookies.sqlite')).mtimeMs);
-  } catch { return []; }
-}
-function firefoxAvailable() { return firefoxProfiles().length > 0; }
-
-// Reads Google/YouTube cookies from a copy of Firefox's cookie database (Firefox locks the original).
-function readFirefoxCookies(profileDir) {
-  const { DatabaseSync } = require('node:sqlite');
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'broomtube-ff-'));
-  try {
-    for (const f of ['cookies.sqlite', 'cookies.sqlite-wal']) {
-      const src = path.join(profileDir, f);
-      if (fs.existsSync(src)) fs.copyFileSync(src, path.join(tmp, f));
-    }
-    const db = new DatabaseSync(path.join(tmp, 'cookies.sqlite'));
-    try {
-      return db.prepare(`SELECT host, name, value, path, expiry, isSecure, isHttpOnly, sameSite FROM moz_cookies
-        WHERE host LIKE '%youtube.com' OR host = '.google.com' OR host = 'google.com' OR host = 'accounts.google.com'`).all();
-    } finally { db.close(); }
-  } finally {
-    fs.rmSync(tmp, { recursive: true, force: true });
-  }
-}
-
-async function importFromFirefox(ses) {
-  const profiles = firefoxProfiles();
-  if (!profiles.length) return { ok: false, error: 'no-firefox' };
-  let rows = [];
-  for (const p of profiles) {
-    rows = readFirefoxCookies(p);
-    if (rows.some((r) => /youtube\.com$/.test(r.host) && /^(SID|__Secure-3PSID|LOGIN_INFO)$/.test(r.name))) break;
-  }
-  const signedIn = rows.some((r) => /youtube\.com$/.test(r.host) && r.name === 'LOGIN_INFO');
-  if (!signedIn) return { ok: false, error: 'not-signed-in' };
-  const now = Date.now() / 1000;
-  let count = 0;
-  for (const r of rows) {
-    // Firefox stores expiry in seconds (older) or milliseconds (newer)
-    const expiry = r.expiry > 1e11 ? r.expiry / 1000 : r.expiry;
-    if (expiry && expiry < now) continue;
-    const host = r.host.replace(/^\./, '');
-    try {
-      await ses.cookies.set({
-        url: `${r.isSecure ? 'https' : 'http'}://${host}${r.path || '/'}`,
-        name: r.name, value: r.value, path: r.path || '/',
-        domain: r.host.startsWith('.') ? r.host : undefined,
-        secure: !!r.isSecure, httpOnly: !!r.isHttpOnly,
-        sameSite: r.sameSite === 2 ? 'strict' : r.sameSite === 1 ? 'lax' : 'no_restriction',
-        expirationDate: expiry || undefined,
-      });
-      count++;
-    } catch {}
-  }
-  return { ok: count > 0, count };
 }
 
 async function signOut(ses) {
@@ -124,4 +60,4 @@ async function isSignedIn(ses) {
   return c.length > 0;
 }
 
-module.exports = { openSigninWindow, importFromFirefox, firefoxAvailable, signOut, isSignedIn, SIGNIN_URL };
+module.exports = { openSigninWindow, signOut, isSignedIn };
