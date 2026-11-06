@@ -28,6 +28,6 @@ console.log(`Inno Setup : ${iscc}`);
 execFileSync(iscc, [
   `/DAppVersion=${pkg.version}`,
   `/DSourceDir=${source}`,
-  path.join(root, 'installer', 'VacuumDesktop.iss'),
+  path.join(root, 'installer', 'BroomTube.iss'),
 ], { stdio: 'inherit' });
-console.log(`\nInstalleur : dist\\VacuumDesktop-Setup-${pkg.version}-x64.exe`);
+console.log(`\nInstalleur : dist\\BroomTube-Setup-${pkg.version}-x64.exe`);

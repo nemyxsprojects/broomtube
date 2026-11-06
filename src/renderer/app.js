@@ -1,4 +1,4 @@
-/* global vacuum */
+/* global broom */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const ICON = {
@@ -50,7 +50,7 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 // ------------------------------------------------------------ Mise en page des vues
 function sendBounds() {
   const r = $('#content').getBoundingClientRect();
-  vacuum.setBounds({ x: r.left, y: r.top, width: r.width, height: r.height });
+  broom.setBounds({ x: r.left, y: r.top, width: r.width, height: r.height });
 }
 new ResizeObserver(sendBounds).observe($('#content'));
 window.addEventListener('resize', sendBounds);
@@ -111,18 +111,18 @@ function renderTabs() {
       el.dataset.id = t.id;
       el.draggable = true;
       el.innerHTML = '<span class="fav ph"></span><span class="title"></span><button class="audio" hidden></button><button class="close" title="' + esc(tr('tab.close')) + '  Ctrl+W">' + ICON.close + '</button>';
-      el.addEventListener('mousedown', (e) => { if (e.button === 0 && !e.target.closest('button')) vacuum.activateTab(t.id); });
-      el.addEventListener('auxclick', (e) => { if (e.button === 1) { e.preventDefault(); vacuum.closeTab(t.id); } });
-      el.querySelector('.close').addEventListener('click', (e) => { e.stopPropagation(); vacuum.closeTab(t.id); });
-      el.querySelector('.audio').addEventListener('click', (e) => { e.stopPropagation(); vacuum.nav('mute', t.id); });
-      el.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/vacuum-tab', String(t.id)); el.classList.add('dragging'); });
+      el.addEventListener('mousedown', (e) => { if (e.button === 0 && !e.target.closest('button')) broom.activateTab(t.id); });
+      el.addEventListener('auxclick', (e) => { if (e.button === 1) { e.preventDefault(); broom.closeTab(t.id); } });
+      el.querySelector('.close').addEventListener('click', (e) => { e.stopPropagation(); broom.closeTab(t.id); });
+      el.querySelector('.audio').addEventListener('click', (e) => { e.stopPropagation(); broom.nav('mute', t.id); });
+      el.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/broomtube-tab', String(t.id)); el.classList.add('dragging'); });
       el.addEventListener('dragend', () => el.classList.remove('dragging'));
       el.addEventListener('dragover', (e) => e.preventDefault());
       el.addEventListener('drop', (e) => {
         e.preventDefault();
-        const id = +e.dataTransfer.getData('text/vacuum-tab');
+        const id = +e.dataTransfer.getData('text/broomtube-tab');
         const idx = $$('.tab', box).indexOf(el);
-        if (id && id !== t.id) vacuum.moveTab(id, idx);
+        if (id && id !== t.id) broom.moveTab(id, idx);
       });
     }
     if (box.children[i] !== el) box.insertBefore(el, box.children[i] || null);
@@ -143,21 +143,21 @@ function renderTabs() {
 }
 
 // ------------------------------------------------------------ Barre latérale & outils
-$$('.side-btn').forEach((b) => b.addEventListener('click', () => vacuum.switchSection(b.dataset.target)));
-$('#new-tab').addEventListener('click', () => vacuum.newTab(state.section));
-$('#tabstrip').addEventListener('dblclick', (e) => { if (e.target.id === 'tabs' || e.target.classList.contains('drag-fill')) vacuum.newTab(state.section); });
-$('#btn-back').addEventListener('click', () => vacuum.nav('back'));
-$('#btn-forward').addEventListener('click', () => vacuum.nav('forward'));
-$('#btn-reload').addEventListener('click', () => vacuum.nav('reload'));
-$('#btn-home').addEventListener('click', () => vacuum.nav('home'));
+$$('.side-btn').forEach((b) => b.addEventListener('click', () => broom.switchSection(b.dataset.target)));
+$('#new-tab').addEventListener('click', () => broom.newTab(state.section));
+$('#tabstrip').addEventListener('dblclick', (e) => { if (e.target.id === 'tabs' || e.target.classList.contains('drag-fill')) broom.newTab(state.section); });
+$('#btn-back').addEventListener('click', () => broom.nav('back'));
+$('#btn-forward').addEventListener('click', () => broom.nav('forward'));
+$('#btn-reload').addEventListener('click', () => broom.nav('reload'));
+$('#btn-home').addEventListener('click', () => broom.nav('home'));
 $('#address').addEventListener('input', () => { addressDirty = true; });
 $('#address').addEventListener('focus', (e) => setTimeout(() => e.target.select(), 0));
 $('#address').addEventListener('blur', () => { addressDirty = false; render(); });
-$('#address').addEventListener('keydown', (e) => { if (e.key === 'Escape') { addressDirty = false; e.target.blur(); vacuum.focusView(); } });
+$('#address').addEventListener('keydown', (e) => { if (e.key === 'Escape') { addressDirty = false; e.target.blur(); broom.focusView(); } });
 $('#address-form').addEventListener('submit', (e) => {
   e.preventDefault();
   addressDirty = false;
-  vacuum.navigate($('#address').value);
+  broom.navigate($('#address').value);
   $('#address').blur();
 });
 
@@ -235,14 +235,14 @@ $('#dl-form').addEventListener('submit', async (e) => {
   const url = $('#dl-url').value.trim();
   if (!/^https?:\/\//i.test(url)) { toast(tr('toast.invalidLink')); return; }
   if (settings.downloadMethod === 'vdh') {
-    const r = await vacuum.vdhOpen(url);
+    const r = await broom.vdhOpen(url);
     toast(r.ok ? tr('toast.vdh') : tr('toast.error', { msg: r.error }), 5000);
     return;
   }
   const btn = $('#dl-go');
   btn.disabled = true;
   try {
-    const job = await vacuum.startDownload({
+    const job = await broom.startDownload({
       url, title: $('#dl-title').textContent || url, kind: dlKind,
       quality: $('#dl-quality').value, audioFormat: $('#dl-audio-format').value,
       playlist: !$('#dl-playlist-row').hidden && $('#dl-playlist').checked,
@@ -256,8 +256,8 @@ $('#dl-form').addEventListener('submit', async (e) => {
     btn.disabled = false;
   }
 });
-$('#dl-clear').addEventListener('click', () => vacuum.clearDownloads());
-$('#dl-open-folder').addEventListener('click', () => vacuum.openDir());
+$('#dl-clear').addEventListener('click', () => broom.clearDownloads());
+$('#dl-open-folder').addEventListener('click', () => broom.openDir());
 
 
 function renderDownloads() {
@@ -293,20 +293,20 @@ $('#dl-list').addEventListener('click', (e) => {
   const b = e.target.closest('button[data-act]');
   if (!b) return;
   const id = +b.closest('.dl-item').dataset.id;
-  ({ cancel: vacuum.cancelDownload, open: vacuum.openDownload, show: vacuum.showDownload, retry: vacuum.retryDownload, remove: vacuum.removeDownload })[b.dataset.act](id);
+  ({ cancel: broom.cancelDownload, open: broom.openDownload, show: broom.showDownload, retry: broom.retryDownload, remove: broom.removeDownload })[b.dataset.act](id);
 });
-vacuum.onDownloadUpdate((d) => {
+broom.onDownloadUpdate((d) => {
   const prev = downloads.get(d.id);
   downloads.set(d.id, d);
   renderDownloads();
   if (prev && prev.status !== 'done' && d.status === 'done') toast(tr('toast.done', { title: d.title.replace(/ - YouTube( Music)?$/, '') }), 3500);
   if (prev && prev.status !== 'error' && d.status === 'error') { toast(tr('toast.failed'), 3500); if (!downloadsOpen) openDownloads(true); }
 });
-vacuum.onDownloadList((list) => { downloads.clear(); list.forEach((d) => downloads.set(d.id, d)); renderDownloads(); });
+broom.onDownloadList((list) => { downloads.clear(); list.forEach((d) => downloads.set(d.id, d)); renderDownloads(); });
 
 // ------------------------------------------------------------ Paramètres
 async function loadSettings() {
-  settings = await vacuum.getSettings();
+  settings = await broom.getSettings();
   $$('#settings [data-key]').forEach((el) => {
     const v = settings[el.dataset.key];
     if (el.type === 'checkbox') el.checked = !!v; else el.value = v;
@@ -314,6 +314,7 @@ async function loadSettings() {
   $('#dl-dir').textContent = settings.downloadDir;
   renderSbCategories();
   updateMethodUI();
+  refreshAccount();
   $('#adblock-info').textContent = settings.adblockLastUpdate
     ? tr('s.ads.updated', { date: new Date(settings.adblockLastUpdate).toLocaleString(lang) })
     : tr('s.ads.builtin');
@@ -321,16 +322,16 @@ async function loadSettings() {
 $$('#settings [data-key]').forEach((el) => el.addEventListener('change', async () => {
   let v = el.type === 'checkbox' ? el.checked : el.value;
   if (el.dataset.type === 'number') v = Number(v);
-  settings = await vacuum.setSetting(el.dataset.key, v);
+  settings = await broom.setSetting(el.dataset.key, v);
   if (el.dataset.key === 'sbEnabled') renderSbCategories();
   if (el.dataset.key === 'downloadMethod') updateMethodUI();
   if (el.dataset.key === 'adblockEnabled') toast(tr(v ? 'toast.adOn' : 'toast.adOff'));
 }));
-$('#dl-dir-choose').addEventListener('click', async () => { const d = await vacuum.chooseDir(); $('#dl-dir').textContent = d; settings.downloadDir = d; });
-$('#dl-dir-open').addEventListener('click', () => vacuum.openDir());
+$('#dl-dir-choose').addEventListener('click', async () => { const d = await broom.chooseDir(); $('#dl-dir').textContent = d; settings.downloadDir = d; });
+$('#dl-dir-open').addEventListener('click', () => broom.openDir());
 $('#adblock-update').addEventListener('click', async (e) => {
   const b = e.currentTarget; b.disabled = true; b.textContent = tr('s.updating');
-  const r = await vacuum.updateAdblock();
+  const r = await broom.updateAdblock();
   b.disabled = false; b.textContent = tr('s.update');
   if (r.ok) toast(tr('toast.filters', { lists: r.lists, total: r.total })); else toast(tr('toast.updateFailed', { msg: r.error || 'network' }), 4000);
   loadSettings();
@@ -354,7 +355,7 @@ function renderSbCategories() {
 $('#sb-cats').addEventListener('change', async (e) => {
   const sel = e.target.closest('select[data-cat]');
   if (!sel) return;
-  settings = await vacuum.setSetting('sbCategories', { ...settings.sbCategories, [sel.dataset.cat]: sel.value });
+  settings = await broom.setSetting('sbCategories', { ...settings.sbCategories, [sel.dataset.cat]: sel.value });
 });
 
 let vdh = null;
@@ -367,11 +368,11 @@ async function updateMethodUI() {
     : tr('s.dl.method.ytdlp');
   applyMethodToPanel();
   if (!isVdh) return;
-  vdh = await vacuum.vdhStatus();
+  vdh = await broom.vdhStatus();
   $('#vdh-info').textContent = tr(!vdh.firefox ? 's.vdh.noFirefox' : vdh.extension ? 's.vdh.found' : 's.vdh.missing');
   $('#vdh-install').hidden = !vdh.firefox || vdh.extension;
 }
-$('#vdh-install').addEventListener('click', () => vdh && vacuum.vdhOpen(vdh.installUrl));
+$('#vdh-install').addEventListener('click', () => vdh && broom.vdhOpen(vdh.installUrl));
 function applyMethodToPanel() {
   const isVdh = settings.downloadMethod === 'vdh';
   $('#dl-kind').hidden = isVdh;
@@ -381,22 +382,42 @@ function applyMethodToPanel() {
   $('#dl-go').textContent = tr(isVdh ? 'dl.go.vdh' : 'dl.go');
 }
 
-async function refreshYtdlp() { $('#ytdlp-info').textContent = tr('s.dl.version', { version: await vacuum.ytdlpVersion() }); }
+async function refreshAccount() {
+  const a = await broom.accountStatus();
+  $('#account-info').textContent = tr(a.signedIn ? 's.account.in' : 's.account.out');
+  $('#account-signin').hidden = a.signedIn;
+  $('#account-signout').hidden = !a.signedIn;
+  $('#account-import').disabled = !a.firefox;
+  $('#account-import').title = a.firefox ? '' : tr('s.account.noFirefox');
+}
+$('#account-signin').addEventListener('click', () => broom.signIn());
+$('#account-signout').addEventListener('click', async () => { await broom.signOut(); toast(tr('toast.signedOut')); refreshAccount(); });
+$('#account-import').addEventListener('click', async (e) => {
+  const b = e.currentTarget; b.disabled = true;
+  const r = await broom.importFirefox();
+  b.disabled = false;
+  if (r.ok) toast(tr('toast.imported'));
+  else toast(tr(r.error === 'not-signed-in' ? 'toast.ffNotSignedIn' : r.error === 'no-firefox' ? 's.account.noFirefox' : 'toast.importFailed'), 5000);
+  refreshAccount();
+});
+broom.onAccountChanged(() => { toast(tr('toast.signedIn')); if (state && state.section === 'settings') refreshAccount(); });
+
+async function refreshYtdlp() { $('#ytdlp-info').textContent = tr('s.dl.version', { version: await broom.ytdlpVersion() }); }
 $('#ytdlp-update').addEventListener('click', async (e) => {
   const b = e.currentTarget; b.disabled = true; b.textContent = tr('s.updating');
-  const r = await vacuum.ytdlpUpdate();
+  const r = await broom.ytdlpUpdate();
   b.disabled = false; b.textContent = tr('s.update');
   $('#ytdlp-info').textContent = tr('s.dl.version', { version: r.version });
   toast(r.ok ? tr('toast.ytdlpOk', { version: r.version }) : tr('toast.ytdlpFail'), 4000);
 });
-$('#clear-cache').addEventListener('click', async () => { await vacuum.clearData('cache'); toast(tr('toast.cache')); });
+$('#clear-cache').addEventListener('click', async () => { await broom.clearData('cache'); toast(tr('toast.cache')); });
 $('#clear-all').addEventListener('click', async () => {
   if (!confirm(tr('confirm.clearAll'))) return;
-  await vacuum.clearData('all'); toast(tr('toast.data'));
+  await broom.clearData('all'); toast(tr('toast.data'));
 });
 
 // ------------------------------------------------------------ Commandes envoyées par le processus principal
-vacuum.onCommand((cmd) => {
+broom.onCommand((cmd) => {
   if (cmd === 'focus-address') { if (state.section !== 'settings') { $('#address').focus(); $('#address').select(); } }
   else if (cmd === 'toggle-downloads') openDownloads();
   else if (cmd === 'download-current') { const t = activeTab(); if (t && t.isVideo) $('#btn-download').click(); else openDownloads(true); }
@@ -413,19 +434,19 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ------------------------------------------------------------ Init
-vacuum.onState((s) => { state = s; render(); });
-vacuum.onI18n((d) => setI18n(d));
+broom.onState((s) => { state = s; render(); });
+broom.onI18n((d) => setI18n(d));
 (async () => {
-  settings = await vacuum.getSettings();
-  { const d = await vacuum.getI18n(); lang = d.lang; strings = d.strings; languages = d.languages; applyI18n(); }
+  settings = await broom.getSettings();
+  { const d = await broom.getI18n(); lang = d.lang; strings = d.strings; languages = d.languages; applyI18n(); }
   applyMethodToPanel();
-  state = await vacuum.getState();
+  state = await broom.getState();
   render();
   sendBounds();
-  const list = await vacuum.listDownloads();
+  const list = await broom.listDownloads();
   list.forEach((d) => downloads.set(d.id, d));
   renderDownloads();
-  const info = await vacuum.appInfo();
-  $('#about').textContent = `Vacuum Desktop ${info.version} · Electron ${info.electron} · Chromium ${info.chrome}`;
+  const info = await broom.appInfo();
+  $('#about').textContent = `BroomTube ${info.version} · Electron ${info.electron} · Chromium ${info.chrome}`;
   refreshYtdlp();
 })();

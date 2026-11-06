@@ -4,7 +4,7 @@
 const { ipcRenderer, contextBridge, webFrame } = require('electron');
 
 let cfg = { adblock: true, shield: '', youtube: false, sb: { enabled: false }, ryd: { enabled: false } };
-try { cfg = ipcRenderer.sendSync('vacuum:view-config', location.href) || cfg; } catch {}
+try { cfg = ipcRenderer.sendSync('broom:view-config', location.href) || cfg; } catch {}
 
 if (cfg.adblock && cfg.shield) {
   try {
@@ -17,8 +17,8 @@ if (cfg.adblock && cfg.shield) {
 
 // Boutons souris précédent / suivant
 window.addEventListener('mouseup', (e) => {
-  if (e.button === 3) { e.preventDefault(); ipcRenderer.send('vacuum:nav', 'back'); }
-  if (e.button === 4) { e.preventDefault(); ipcRenderer.send('vacuum:nav', 'forward'); }
+  if (e.button === 3) { e.preventDefault(); ipcRenderer.send('broom:nav', 'back'); }
+  if (e.button === 4) { e.preventDefault(); ipcRenderer.send('broom:nav', 'forward'); }
 });
 
 if (cfg.youtube) {
@@ -80,7 +80,7 @@ if (cfg.youtube) {
     if (!noticeEl || !noticeEl.isConnected || noticeEl.parentElement !== host) {
       if (noticeEl) noticeEl.remove();
       noticeEl = document.createElement('div');
-      noticeEl.className = 'vacuum-sb-notice' + (IS_MUSIC ? ' music' : '');
+      noticeEl.className = 'broom-sb-notice' + (IS_MUSIC ? ' music' : '');
       host.appendChild(noticeEl);
     }
     noticeEl.textContent = '';
@@ -105,7 +105,7 @@ if (cfg.youtube) {
     if (noticeEl) noticeEl.classList.remove('show');
   }
 
-  function removeMarkers() { document.querySelectorAll('.vacuum-sb-markers').forEach((n) => n.remove()); }
+  function removeMarkers() { document.querySelectorAll('.broom-sb-markers').forEach((n) => n.remove()); }
   function renderMarkers(video) {
     if (IS_MUSIC || !sb.markers) return removeMarkers();
     const bar = document.querySelector('#movie_player .ytp-progress-bar');
@@ -115,13 +115,13 @@ if (cfg.youtube) {
     if (!dur || !isFinite(dur)) dur = parseFloat(bar.getAttribute('aria-valuemax'));
     if (!dur || !isFinite(dur)) return;
     const visible = segments.filter((s) => s.actionType !== 'full');
-    let box = bar.querySelector('.vacuum-sb-markers');
+    let box = bar.querySelector('.broom-sb-markers');
     const sig = sbVideo + ':' + Math.round(dur) + ':' + visible.length;
     if (box && box.dataset.sig === sig) return;
     if (box) box.remove();
     if (!visible.length) return;
     box = document.createElement('div');
-    box.className = 'vacuum-sb-markers';
+    box.className = 'broom-sb-markers';
     box.dataset.sig = sig;
     for (const s of visible) {
       const i = document.createElement('i');
@@ -194,13 +194,13 @@ if (cfg.youtube) {
     if (rydVideo === id && v && typeof v.dislikes === 'number') votes = v;
   }
   function cleanupRyd() {
-    document.querySelectorAll('.vacuum-ryd-text, .vacuum-ryd-bar').forEach((n) => n.remove());
-    document.querySelectorAll('[data-vacuum-ryd]').forEach((b) => {
+    document.querySelectorAll('.broom-ryd-text, .broom-ryd-bar').forEach((n) => n.remove());
+    document.querySelectorAll('[data-broom-ryd]').forEach((b) => {
       b.classList.replace('ytSpecButtonShapeNextIconLeading', 'ytSpecButtonShapeNextIconButton');
       b.classList.replace('yt-spec-button-shape-next--icon-leading', 'yt-spec-button-shape-next--icon-button');
-      delete b.dataset.vacuumRyd;
+      delete b.dataset.broomRyd;
     });
-    document.querySelectorAll('[data-vacuum-ryd-label]').forEach((s) => { s.textContent = s.dataset.vacuumRydLabel; delete s.dataset.vacuumRydLabel; });
+    document.querySelectorAll('[data-broom-ryd-label]').forEach((s) => { s.textContent = s.dataset.broomRydLabel; delete s.dataset.broomRydLabel; });
   }
   function rydTick() {
     if (!votes || !ryd.enabled) return;
@@ -211,7 +211,7 @@ if (cfg.youtube) {
     if (isShorts()) {
       const label = document.querySelector('ytd-reel-video-renderer[is-active] dislike-button-view-model [class*="abel"] span, ytd-reel-video-renderer[is-active] #dislike-button [class*="abel"] span');
       if (label && label.textContent !== text) {
-        if (!label.dataset.vacuumRydLabel) label.dataset.vacuumRydLabel = label.textContent;
+        if (!label.dataset.broomRydLabel) label.dataset.broomRydLabel = label.textContent;
         label.textContent = text;
       }
       return;
@@ -222,29 +222,29 @@ if (cfg.youtube) {
     const dislike = seg.querySelector('dislike-button-view-model button');
     const like = seg.querySelector('like-button-view-model button');
     if (!dislike) return;
-    let span = dislike.querySelector('.vacuum-ryd-text');
+    let span = dislike.querySelector('.broom-ryd-text');
     if (!span) {
       // Même structure que le compteur du bouton "J'aime" voisin
       const ref = like && like.querySelector('[class*="ButtonTextContent"], [class*="button-text-content"]');
       span = document.createElement(ref ? ref.tagName : 'div');
-      span.className = (ref ? ref.className + ' ' : '') + 'vacuum-ryd-text';
+      span.className = (ref ? ref.className + ' ' : '') + 'broom-ryd-text';
       if (ref) span.style.marginLeft = '0';
       const icon = dislike.querySelector('[class*="ButtonShapeNextIcon"], [class*="button-shape-next__icon"]');
       if (icon && icon.nextSibling) dislike.insertBefore(span, icon.nextSibling); else dislike.appendChild(span);
     }
     if (span.textContent !== text) span.textContent = text;
-    if (!dislike.dataset.vacuumRyd) {
-      dislike.dataset.vacuumRyd = '1';
+    if (!dislike.dataset.broomRyd) {
+      dislike.dataset.broomRyd = '1';
       dislike.classList.replace('ytSpecButtonShapeNextIconButton', 'ytSpecButtonShapeNextIconLeading');
       dislike.classList.replace('yt-spec-button-shape-next--icon-button', 'yt-spec-button-shape-next--icon-leading');
     }
     if (dislike.title !== tip) dislike.title = tip;
 
-    let bar = seg.querySelector(':scope > .vacuum-ryd-bar');
+    let bar = seg.querySelector(':scope > .broom-ryd-bar');
     if (ryd.bar && total > 0) {
       if (!bar) {
         bar = document.createElement('div');
-        bar.className = 'vacuum-ryd-bar';
+        bar.className = 'broom-ryd-bar';
         bar.appendChild(document.createElement('i'));
         seg.appendChild(bar);
       }
@@ -260,7 +260,7 @@ if (cfg.youtube) {
     loadSegments(id);
     loadVotes(id);
   }
-  ipcRenderer.on('vacuum:features-config', (_e, c) => {
+  ipcRenderer.on('broom:features-config', (_e, c) => {
     sb = c.sb; ryd = c.ryd; strings = c.strings || strings;
     cleanupRyd();
     onVideoChange(lastId);

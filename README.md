@@ -1,6 +1,6 @@
 <div align="center">
-  <img width="128px" src="build/logo.svg" alt="Vacuum Desktop logo">
-  <h1 align="center">Vacuum Desktop</h1>
+  <img width="128px" src="build/logo.svg" alt="BroomTube logo">
+  <h1 align="center">BroomTube</h1>
   <p align="center">
     YouTube and YouTube Music, cleaned up.
     <br>
@@ -21,7 +21,7 @@
 
 ## ❓ About
 
-Vacuum Desktop is a Windows app dedicated to YouTube and YouTube Music. It blocks ads, skips sponsor segments, brings back dislike counts and downloads videos, all in one window with separate tabs for YouTube and Music.
+BroomTube is a Windows app dedicated to YouTube and YouTube Music. It blocks ads, skips sponsor segments, brings back dislike counts and downloads videos, all in one window with separate tabs for YouTube and Music.
 
 ## 💪 Features
 
@@ -31,11 +31,12 @@ Vacuum Desktop is a Windows app dedicated to YouTube and YouTube Music. It block
 - ⬇️ **Downloader**: videos up to 4K, MP3/M4A/Opus audio and whole playlists with yt-dlp, or hand off to Video DownloadHelper in Firefox
 - 🎵 **YouTube Music**: its own section and tabs, music keeps playing while you browse YouTube
 - 🗂️ **Tabs**: shortcuts, drag and drop, session restore
+- 🔐 **Google sign-in that works**: a dedicated sign-in window that Google accepts, or import your session from Firefox in one click
 - 🌍 **6 languages**: English, French, Spanish, German, Italian and Brazilian Portuguese
 
 ## 🔽 Download
 
-Get the latest installer (`VacuumDesktop-Setup-<version>-x64.exe`) from the [releases page](../../releases/latest).
+Get the latest installer (`BroomTube-Setup-<version>-x64.exe`) from the [releases page](../../releases/latest).
 The installer runs without admin rights and asks for your language first.
 
 ## 📚 Everything else
@@ -49,7 +50,7 @@ npm install
 npm run dist      # yt-dlp + ffmpeg, Electron build, Inno Setup installer
 ```
 
-Separate steps: `npm run fetch-bin`, `npm run pack` (→ `dist/win-unpacked`), `npm run setup` (→ `dist/VacuumDesktop-Setup-<version>-x64.exe`).
+Separate steps: `npm run fetch-bin`, `npm run pack` (→ `dist/win-unpacked`), `npm run setup` (→ `dist/BroomTube-Setup-<version>-x64.exe`).
 Run in development with `npm start`.
 
 ### ⚙️ How it works
@@ -76,13 +77,13 @@ YouTube changes its countermeasures often. If ads or stalls come back, the `yout
 <summary><b>Downloader</b></summary>
 
 - **yt-dlp** (default) runs with the app's bundled Node.js as its JavaScript runtime and, optionally, the cookies of your signed-in session, which keeps rate limiting and "confirm you're not a bot" blocks to a minimum. It updates itself daily.
-- **Video DownloadHelper** cannot run inside an Electron app (it needs extension APIs and a native companion), and its Chrome version does not support YouTube. Vacuum Desktop opens the link in Firefox, where the extension takes over.
+- **Video DownloadHelper** cannot run inside an Electron app (it needs extension APIs and a native companion), and its Chrome version does not support YouTube. BroomTube opens the link in Firefox, where the extension takes over.
 </details>
 
 ## ⚖️ License
 
-Vacuum Desktop is licensed under the GPLv3 license. Please see the [license file](LICENSE) for more information.
-[tl;dr](https://www.tldrlegal.com/license/gnu-general-public-license-v3-gpl-3) you may copy, distribute and modify Vacuum Desktop as long as you track changes/dates in source files.
-Any modifications to Vacuum Desktop must also be made available under the GPL, along with build & install instructions.
+BroomTube is licensed under the GPLv3 license. Please see the [license file](LICENSE) for more information.
+[tl;dr](https://www.tldrlegal.com/license/gnu-general-public-license-v3-gpl-3) you may copy, distribute and modify BroomTube as long as you track changes/dates in source files.
+Any modifications to BroomTube must also be made available under the GPL, along with build & install instructions.
 
-Vacuum Desktop is not affiliated with YouTube or Google.
+BroomTube is not affiliated with YouTube or Google.

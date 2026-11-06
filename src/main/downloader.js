@@ -39,7 +39,7 @@ function publicJob(j) {
   const { proc, cookieFile, log, opts, ...rest } = j;
   return { ...rest, log: log.slice(-15) };
 }
-function emit(j) { notify('vacuum:download-update', publicJob(j)); }
+function emit(j) { notify('broom:download-update', publicJob(j)); }
 function list() { return [...jobs.values()].map(publicJob).sort((a, b) => b.id - a.id); }
 
 async function writeCookies() {
@@ -53,7 +53,7 @@ async function writeCookies() {
     lines.push([domain, domain.startsWith('.') ? 'TRUE' : 'FALSE', c.path || '/', c.secure ? 'TRUE' : 'FALSE',
       Math.floor(c.expirationDate || 0), c.name, c.value].join('\t'));
   }
-  const f = path.join(app.getPath('temp'), `vacuum-cookies-${process.pid}-${Date.now()}.txt`);
+  const f = path.join(app.getPath('temp'), `broomtube-cookies-${process.pid}-${Date.now()}.txt`);
   fs.writeFileSync(f, lines.join('\n') + '\n');
   return f;
 }

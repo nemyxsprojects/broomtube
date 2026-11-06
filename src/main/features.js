@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 
-const UA = `VacuumDesktop/${app.getVersion()}`;
+const UA = `BroomTube/${app.getVersion()}`;
 const SB_API = 'https://sponsor.ajay.app/api';
 const RYD_API = 'https://returnyoutubedislikeapi.com';
 const VDH_FIREFOX_ID = '{b9db16a4-6edc-47ec-a1f4-b86292ed211d}';

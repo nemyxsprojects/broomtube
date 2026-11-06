@@ -1,4 +1,4 @@
-﻿; Script Inno Setup — Vacuum Desktop (Windows x64)
+﻿; Script Inno Setup — BroomTube (Windows x64)
 ; Compilé par scripts/build-setup.js (qui passe AppVersion et SourceDir).
 
 #ifndef AppVersion
@@ -8,15 +8,16 @@
   #define SourceDir "..\dist\win-unpacked"
 #endif
 
-#define AppName "Vacuum Desktop"
-#define AppExe "Vacuum Desktop.exe"
-#define AppPublisher "Vacuum"
-; Anciennes versions (BetterYoutube Desktop, ReTube), désinstallées automatiquement en gardant les données
+#define AppName "BroomTube"
+#define AppExe "BroomTube.exe"
+#define AppPublisher "BroomTube"
+; Anciennes versions (BetterYoutube Desktop, ReTube, Vacuum Desktop), désinstallées automatiquement en gardant les données
 #define OldAppId "{6C1F5B8E-3D2A-4B7C-9E41-B7D0A2F35C91}"
 #define OldAppId2 "{A3E2C7D4-58B1-4F0E-9C6A-2D7F1B9E4A60}"
+#define OldAppId3 "{E7B94F21-6C3D-4A85-B1F0-9D2E5C8A7B34}"
 
 [Setup]
-AppId={{E7B94F21-6C3D-4A85-B1F0-9D2E5C8A7B34}
+AppId={{5B2D8E41-9A7C-4F36-8E10-C3B6A9D47F25}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppVerName={#AppName} {#AppVersion}
@@ -31,7 +32,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 OutputDir=..\dist
-OutputBaseFilename=VacuumDesktop-Setup-{#AppVersion}-x64
+OutputBaseFilename=BroomTube-Setup-{#AppVersion}-x64
 SetupIconFile=..\build\icon.ico
 UninstallDisplayIcon={app}\{#AppExe}
 UninstallDisplayName={#AppName}
@@ -127,6 +128,7 @@ begin
   begin
     RemoveOld('{#OldAppId}');
     RemoveOld('{#OldAppId2}');
+    RemoveOld('{#OldAppId3}');
   end;
   // The language picked in the installer becomes the app's default language
   if CurStep = ssPostInstall then

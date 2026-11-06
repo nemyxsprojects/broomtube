@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline'; script-src 'self'">
-  <title>Vacuum Desktop</title>
+  <title>BroomTube</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body data-section="youtube">
@@ -115,14 +115,20 @@
 
       <section id="settings" hidden>
         <nav class="settings-nav">
-          <a href="#set-general" data-i18n="s.nav.general">General</a><a href="#set-ads" data-i18n="s.nav.ads">Ads</a><a href="#set-sponsorblock" data-i18n="s.nav.sb">SponsorBlock</a><a href="#set-ryd" data-i18n="s.nav.ryd">Dislikes</a><a href="#set-downloads" data-i18n="s.nav.dl">Downloads</a><a href="#set-start" data-i18n="s.nav.start">Startup</a><a href="#set-data" data-i18n="s.nav.data">Data</a><a href="#set-keys" data-i18n="s.nav.keys">Shortcuts</a>
+          <a href="#set-general" data-i18n="s.nav.general">General</a><a href="#set-account" data-i18n="s.nav.account">Account</a><a href="#set-ads" data-i18n="s.nav.ads">Ads</a><a href="#set-sponsorblock" data-i18n="s.nav.sb">SponsorBlock</a><a href="#set-ryd" data-i18n="s.nav.ryd">Dislikes</a><a href="#set-downloads" data-i18n="s.nav.dl">Downloads</a><a href="#set-start" data-i18n="s.nav.start">Startup</a><a href="#set-data" data-i18n="s.nav.data">Data</a><a href="#set-keys" data-i18n="s.nav.keys">Shortcuts</a>
         </nav>
         <div class="settings-inner">
 
           <section class="group" id="set-general">
             <h2 data-i18n="s.general">General</h2>
-            <div class="row"><span class="row-text"><b data-i18n="s.language">Language</b><small data-i18n="s.language.desc">Language of Vacuum Desktop. YouTube keeps its own language setting.</small></span>
+            <div class="row"><span class="row-text"><b data-i18n="s.language">Language</b><small data-i18n="s.language.desc">Language of BroomTube. YouTube keeps its own language setting.</small></span>
               <select data-key="language" id="language-select"></select></div>
+          </section>
+
+          <section class="group" id="set-account">
+            <h2 data-i18n="s.account">Google account</h2>
+            <div class="row"><span class="row-text"><b data-i18n="s.account.status">Status</b><small id="account-info">—</small></span><span class="btns"><button class="btn" id="account-signin" data-i18n="s.account.signin">Sign in</button><button class="btn" id="account-signout" data-i18n="s.account.signout" hidden>Sign out</button></span></div>
+            <div class="row"><span class="row-text"><b data-i18n="s.account.firefox">Use my Firefox sign-in</b><small data-i18n="s.account.firefox.desc">If Google refuses to sign you in here: sign in to YouTube in Firefox, then import that session. Only Google and YouTube cookies are copied.</small></span><button class="btn" id="account-import" data-i18n="s.account.import">Import</button></div>
           </section>
 
           <section class="group" id="set-ads">
@@ -152,7 +158,7 @@
 
           <section class="group" id="set-downloads">
             <h2 data-i18n="s.nav.dl">Downloads</h2>
-            <div class="row"><span class="row-text"><b data-i18n="s.dl.method">Method</b><small id="dl-method-info">yt-dlp is built into Vacuum Desktop.</small></span>
+            <div class="row"><span class="row-text"><b data-i18n="s.dl.method">Method</b><small id="dl-method-info">yt-dlp is built into BroomTube.</small></span>
               <select data-key="downloadMethod"><option value="ytdlp" data-i18n="s.dl.ytdlp">yt-dlp (built-in)</option><option value="vdh">Video DownloadHelper</option></select></div>
             <div class="row" id="vdh-row" hidden><span class="row-text"><b>Video DownloadHelper</b><small id="vdh-info">—</small></span><button class="btn" id="vdh-install" hidden data-i18n="s.vdh.install">Install</button></div>
             <div class="row ytdlp-only"><span class="row-text"><b data-i18n="s.dl.quality">Video quality</b></span>

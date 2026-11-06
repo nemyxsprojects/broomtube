@@ -1,23 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
   <defs>
-    <linearGradient id="g" x1="60" y1="20" x2="200" y2="240" gradientUnits="userSpaceOnUse">
+    <linearGradient id="g" x1="40" y1="20" x2="216" y2="236" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#ff8a3d"/>
       <stop offset="0.55" stop-color="#f2335f"/>
       <stop offset="1" stop-color="#8b4dff"/>
     </linearGradient>
-    <radialGradient id="glow" cx="128" cy="104" r="70" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ff6a3d" stop-opacity="0.35"/>
-      <stop offset="1" stop-color="#ff6a3d" stop-opacity="0"/>
-    </radialGradient>
+    <!-- Découpes dans la tête du balai : triangle lecture + fentes des poils -->
+    <mask id="cut">
+      <rect width="256" height="256" fill="#fff"/>
+      <path d="M114 150 L148 170 L114 190 Z" fill="#000" stroke="#000" stroke-width="10" stroke-linejoin="round" transform="rotate(28 127 170)"/>
+      <rect x="86" y="212" width="8" height="34" rx="4" fill="#000"/>
+      <rect x="110" y="214" width="8" height="34" rx="4" fill="#000"/>
+      <rect x="138" y="214" width="8" height="34" rx="4" fill="#000"/>
+      <rect x="162" y="212" width="8" height="34" rx="4" fill="#000"/>
+    </mask>
   </defs>
-  <!-- Ampoule de verre du tube à vide -->
-  <path d="M76 168 V76 a52 52 0 0 1 104 0 V168 Z" fill="url(#glow)"/>
-  <path d="M76 168 V76 a52 52 0 0 1 104 0 V168" fill="none" stroke="url(#g)" stroke-width="18" stroke-linejoin="round" stroke-linecap="round"/>
-  <!-- Filament : triangle de lecture -->
-  <path d="M112 78 L156 106 L112 134 Z" fill="url(#g)" stroke="url(#g)" stroke-width="18" stroke-linejoin="round"/>
-  <!-- Culot et broches -->
-  <rect x="62" y="164" width="132" height="34" rx="10" fill="url(#g)"/>
-  <rect x="86" y="200" width="14" height="26" rx="7" fill="url(#g)"/>
-  <rect x="121" y="200" width="14" height="26" rx="7" fill="url(#g)"/>
-  <rect x="156" y="200" width="14" height="26" rx="7" fill="url(#g)"/>
+  <g transform="translate(-8 -4) rotate(-28 128 140)">
+    <!-- Manche -->
+    <rect x="117" y="4" width="22" height="112" rx="11" fill="url(#g)"/>
+    <!-- Virole -->
+    <rect x="96" y="106" width="64" height="24" rx="9" fill="url(#g)"/>
+    <!-- Tête (poils) -->
+    <path d="M100 134 H156 L190 226 Q192 236 182 236 H74 Q64 236 66 226 Z" fill="url(#g)" mask="url(#cut)"/>
+  </g>
 </svg>

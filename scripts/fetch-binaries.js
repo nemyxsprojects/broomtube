@@ -28,7 +28,7 @@ async function download(url, dest) {
   const ffmpeg = path.join(BIN, 'ffmpeg.exe');
   const ffprobe = path.join(BIN, 'ffprobe.exe');
   if (force || !fs.existsSync(ffmpeg) || !fs.existsSync(ffprobe)) {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'vacuum-ffmpeg-'));
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'broomtube-ffmpeg-'));
     const zip = path.join(tmp, 'ffmpeg.zip');
     await download(FFMPEG_URL, zip);
     // tar (bsdtar) est fourni avec Windows 10+ et sait extraire les .zip

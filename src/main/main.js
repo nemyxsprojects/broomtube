@@ -7,15 +7,16 @@ const downloader = require('./downloader');
 const netfilter = require('./netfilter');
 const features = require('./features');
 const i18n = require('./i18n');
+const signin = require('./signin');
 
 let t = i18n.translator('en');
 
-app.setAppUserModelId('com.vacuum.desktop');
+app.setAppUserModelId('com.broomtube.app');
 // Reprise des données d'une installation précédente (connexion, réglages, onglets)
 try {
   const newDir = app.getPath('userData');
   if (!fs.existsSync(newDir)) {
-    const old = ['ReTube', 'BetterYoutube Desktop'].map((n) => path.join(app.getPath('appData'), n)).find((d) => fs.existsSync(d));
+    const old = ['Vacuum Desktop', 'ReTube', 'BetterYoutube Desktop'].map((n) => path.join(app.getPath('appData'), n)).find((d) => fs.existsSync(d));
     if (old) fs.renameSync(old, newDir);
   }
 } catch (e) { console.warn('Migration des données impossible', e.message); }
@@ -71,6 +72,22 @@ function unwrapRedirect(u) {
     if (isGoogleHost(x.hostname) && x.pathname === '/url' && x.searchParams.get('q')) return x.searchParams.get('q');
   } catch {}
   return u;
+}
+// Google sign-in pages are opened in the dedicated sign-in window
+function isGoogleSignin(u) {
+  try {
+    const x = new URL(u);
+    return x.hostname === 'accounts.google.com' && /^\/(ServiceLogin|InteractiveLogin|AccountChooser|signin|v3\/signin)/i.test(x.pathname);
+  } catch { return false; }
+}
+function startSignin(url) {
+  signin.openSigninWindow({
+    parent: win, partition: PARTITION, url,
+    onDone: () => {
+      for (const t of tabsById.values()) t.view.webContents.reload();
+      send('account:changed', null);
+    },
+  });
 }
 function openExternal(u) {
   const t = unwrapRedirect(u);
@@ -190,6 +207,7 @@ function wireTab(tab) {
 
   wc.on('will-navigate', (e) => {
     const url = e.url;
+    if (isGoogleSignin(url)) { e.preventDefault(); startSignin(url); return; }
     if (!isInternal(url)) { e.preventDefault(); openExternal(url); return; }
     const target = sectionForUrl(url);
     if (target !== tab.section && (target === 'music' || isContentPage(url))) {
@@ -200,6 +218,7 @@ function wireTab(tab) {
   });
 
   wc.setWindowOpenHandler(({ url, disposition }) => {
+    if (isGoogleSignin(url)) { startSignin(url); return { action: 'deny' }; }
     const real = unwrapRedirect(url);
     if (isInternal(real) && real === url) {
       const target = sectionForUrl(url);
@@ -372,7 +391,7 @@ function showContextMenu(tab, p) {
 // ---------------------------------------------------------------- IPC
 function registerIpc() {
   // Configuration demandée de façon synchrone par le preload des onglets
-  ipcMain.on('vacuum:view-config', (e, href) => {
+  ipcMain.on('broom:view-config', (e, href) => {
     const h = hostOf(href);
     e.returnValue = {
       adblock: !!settings.get('adblockEnabled') && isYouTubeHost(h), shield: SHIELD_SRC,
@@ -387,8 +406,22 @@ function registerIpc() {
   ipcMain.on('sb:viewed', (_e, uuid) => { if (settings.get('sbCountViews')) features.sponsorViewed(uuid); });
   ipcMain.handle('ryd:votes', (_e, videoId) => (settings.get('rydEnabled') ? features.dislikes(videoId) : null));
   ipcMain.handle('vdh:status', () => features.vdhStatus());
+  ipcMain.handle('account:status', async () => ({ signedIn: await signin.isSignedIn(ses), firefox: signin.firefoxAvailable() }));
+  ipcMain.on('account:signin', () => startSignin());
+  ipcMain.handle('account:import', async () => {
+    try {
+      const r = await signin.importFromFirefox(ses);
+      if (r.ok) for (const t of tabsById.values()) t.view.webContents.reload();
+      return r;
+    } catch (e) { return { ok: false, error: e.message }; }
+  });
+  ipcMain.handle('account:signout', async () => {
+    await signin.signOut(ses);
+    for (const t of tabsById.values()) t.view.webContents.reload();
+    return true;
+  });
   ipcMain.handle('vdh:open', (_e, url) => features.openInFirefox(url));
-  ipcMain.on('vacuum:nav', (e, action) => {
+  ipcMain.on('broom:nav', (e, action) => {
     const tab = [...tabsById.values()].find((t) => t.view.webContents === e.sender);
     if (tab) nav(action, tab);
   });
@@ -438,7 +471,7 @@ function registerIpc() {
     }
     if (/^(sb|ryd|language)/.test(key)) {
       const cfg = featuresConfig();
-      for (const t of tabsById.values()) if (!t.view.webContents.isDestroyed()) t.view.webContents.send('vacuum:features-config', cfg);
+      for (const t of tabsById.values()) if (!t.view.webContents.isDestroyed()) t.view.webContents.send('broom:features-config', cfg);
     }
     return settings.get();
   });
@@ -470,8 +503,8 @@ function registerIpc() {
   ipcMain.handle('dl:list', () => downloader.list());
   ipcMain.on('dl:cancel', (_e, id) => downloader.cancel(id));
   ipcMain.on('dl:retry', (_e, id) => downloader.retry(id));
-  ipcMain.on('dl:remove', (_e, id) => { downloader.remove(id); send('vacuum:download-list', downloader.list()); });
-  ipcMain.on('dl:clear', () => { downloader.clearFinished(); send('vacuum:download-list', downloader.list()); });
+  ipcMain.on('dl:remove', (_e, id) => { downloader.remove(id); send('broom:download-list', downloader.list()); });
+  ipcMain.on('dl:clear', () => { downloader.clearFinished(); send('broom:download-list', downloader.list()); });
   ipcMain.on('dl:open', (_e, id) => downloader.openFile(id));
   ipcMain.on('dl:show', (_e, id) => downloader.showFile(id));
 }
@@ -480,7 +513,7 @@ function registerIpc() {
 function setupSession() {
   ses = session.fromPartition(PARTITION);
   const base = app.userAgentFallback;
-  // Ne garder que les jetons d'un vrai Chrome (retire "Electron/x" et "Vacuum Desktop/x")
+  // Ne garder que les jetons d'un vrai Chrome (retire "Electron/x" et "BroomTube/x")
   chromeUA = base.replace(/\s([^\s/()]+)\/\S+/g, (m, name) => (['AppleWebKit', 'Chrome', 'Safari'].includes(name) ? m : ''));
   app.userAgentFallback = chromeUA;
   ses.setUserAgent(chromeUA);
@@ -510,7 +543,7 @@ function createWindow() {
     width: ws.width || 1380, height: ws.height || 860, x: ws.x, y: ws.y,
     minWidth: 760, minHeight: 480,
     backgroundColor: '#0f0f0f',
-    title: 'Vacuum Desktop',
+    title: 'BroomTube',
     icon: path.join(__dirname, '..', 'renderer', 'assets', 'icon.png'),
     titleBarStyle: 'hidden',
     titleBarOverlay: { color: '#0e0e10', symbolColor: '#a1a1a8', height: 38 },

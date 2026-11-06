@@ -6,7 +6,7 @@ const on = (channel) => (cb) => {
   return () => ipcRenderer.removeListener(channel, h);
 };
 
-contextBridge.exposeInMainWorld('vacuum', {
+contextBridge.exposeInMainWorld('broom', {
   // onglets / sections
   getState: () => ipcRenderer.invoke('ui:state'),
   getI18n: () => ipcRenderer.invoke('i18n:get'),
@@ -33,6 +33,11 @@ contextBridge.exposeInMainWorld('vacuum', {
   appInfo: () => ipcRenderer.invoke('app:info'),
   clearData: (what) => ipcRenderer.invoke('app:clear-data', what),
   vdhStatus: () => ipcRenderer.invoke('vdh:status'),
+  accountStatus: () => ipcRenderer.invoke('account:status'),
+  signIn: () => ipcRenderer.send('account:signin'),
+  importFirefox: () => ipcRenderer.invoke('account:import'),
+  signOut: () => ipcRenderer.invoke('account:signout'),
+  onAccountChanged: on('account:changed'),
   vdhOpen: (url) => ipcRenderer.invoke('vdh:open', url),
   // téléchargements
   startDownload: (opts) => ipcRenderer.invoke('dl:start', opts),
@@ -43,6 +48,6 @@ contextBridge.exposeInMainWorld('vacuum', {
   clearDownloads: () => ipcRenderer.send('dl:clear'),
   openDownload: (id) => ipcRenderer.send('dl:open', id),
   showDownload: (id) => ipcRenderer.send('dl:show', id),
-  onDownloadUpdate: on('vacuum:download-update'),
-  onDownloadList: on('vacuum:download-list'),
+  onDownloadUpdate: on('broom:download-update'),
+  onDownloadList: on('broom:download-list'),
 });

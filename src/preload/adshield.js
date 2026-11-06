@@ -7,8 +7,8 @@
 //  - la suppression du popup anti-bloqueur et des bannières Premium.
 (function adshield() {
   'use strict';
-  if (window.__vacuumAdShield) return;
-  Object.defineProperty(window, '__vacuumAdShield', { value: true });
+  if (window.__broomAdShield) return;
+  Object.defineProperty(window, '__broomAdShield', { value: true });
 
   let mutedByUs = false;
   let unstartedTicks = 0;
@@ -187,8 +187,8 @@
     const obs = new MutationObserver(tick);
     setInterval(() => {
       const player = document.querySelector('#movie_player, .html5-video-player');
-      if (player && !player.__vacuumObserved) {
-        player.__vacuumObserved = true;
+      if (player && !player.__broomObserved) {
+        player.__broomObserved = true;
         obs.observe(player, { attributes: true, attributeFilter: ['class'] });
       }
       tick();
